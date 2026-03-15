@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { AnimeData } from "../../data/sampleAnime";
 
 const FALLBACK_IMAGE =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='130' height='180' viewBox='0 0 130 180'%3E%3Crect width='130' height='180' fill='%230e1018'/%3E%3Ccircle cx='65' cy='65' r='30' fill='%231a1d2e'/%3E%3Cellipse cx='65' cy='160' rx='45' ry='30' fill='%231a1d2e'/%3E%3C/svg%3E";
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='230' height='325' viewBox='0 0 230 325'%3E%3Crect width='230' height='325' fill='%230e1018'/%3E%3Ccircle cx='115' cy='110' r='50' fill='%231a1d2e'/%3E%3Cellipse cx='115' cy='290' rx='75' ry='50' fill='%231a1d2e'/%3E%3C/svg%3E";
 
 interface CharacterDetail {
   name: string;
@@ -17,21 +17,52 @@ interface Props {
   anime: AnimeData;
 }
 
-/** 円形クロップ用インラインスタイル（mask-image: radial-gradient） */
-const circleClipStyle = {
-  WebkitMaskImage: "radial-gradient(circle, #000 62%, transparent 63%)",
-  maskImage: "radial-gradient(circle, #000 62%, transparent 63%)",
-} as React.CSSProperties;
+/** Wikipedia REST API でキャラクター説明文を取得する（日本語 → 英語の順で試みる） */
+async function fetchWikipediaDescription(name: string): Promise<string | null> {
+  const endpoints = [
+    `https://ja.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`,
+    `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`,
+  ];
 
-/** ホバー時に拡張する mask */
-const circleClipHoverStyle = {
-  WebkitMaskImage: "radial-gradient(circle, #000 72%, transparent 73%)",
-  maskImage: "radial-gradient(circle, #000 72%, transparent 73%)",
-} as React.CSSProperties;
+  for (const url of endpoints) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) continue;
+
+      const data = await res.json();
+      // disambiguation ページや短すぎる抜粋は使わない
+      if (data.type === "disambiguation") continue;
+      if (!data.extract || data.extract.length < 40) continue;
+
+      return data.extract;
+    } catch {
+      // ネットワークエラーは無視して次のエンドポイントへ
+    }
+  }
+  return null;
+}
 
 export default function CharacterGrid({ anime }: Props) {
   const [selected, setSelected] = useState<CharacterDetail | null>(null);
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [wikiDescription, setWikiDescription] = useState<string | null>(null);
+  const [isFetchingDesc, setIsFetchingDesc] = useState(false);
+
+  // モーダルが開いていて AniList の説明文がない場合に Wikipedia から取得
+  useEffect(() => {
+    if (!selected) {
+      setWikiDescription(null);
+      return;
+    }
+    if (selected.description) return;
+
+    setIsFetchingDesc(true);
+    setWikiDescription(null);
+
+    fetchWikipediaDescription(selected.name).then((desc) => {
+      setWikiDescription(desc);
+      setIsFetchingDesc(false);
+    });
+  }, [selected]);
 
   const characters = anime.characters.nodes;
   if (characters.length === 0) return null;
@@ -39,7 +70,7 @@ export default function CharacterGrid({ anime }: Props) {
   return (
     <>
       <section className="cg-section">
-        {/* ── 4隅コーナーフレーム（cs-corner と共有） ── */}
+        {/* ── 4隅コーナーフレーム ── */}
         <span className="cs-corner cs-corner--tl" aria-hidden="true" />
         <span className="cs-corner cs-corner--tr" aria-hidden="true" />
         <span className="cs-corner cs-corner--bl" aria-hidden="true" />
@@ -51,77 +82,51 @@ export default function CharacterGrid({ anime }: Props) {
           <p className="cg-heading-ja">登場人物</p>
         </div>
 
-        {/* ── キャラクターグリッド ── */}
+        {/* ── ポートレートグリッド ── */}
         <div className="cg-grid">
           {characters.map((char, i) => {
             const voiceActor = anime.characters.edges[i]?.voiceActors?.[0];
-            const isHovered = hoveredId === char.id;
+            const displayName = char.name.native || char.name.full;
+            const cvDisplayName =
+              voiceActor?.name.native || voiceActor?.name.full;
 
             return (
               <motion.div
                 key={char.id}
                 className="cg-card"
-                /* stagger フェードイン */
-                initial={{ opacity: 0, y: 24 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
-                transition={{ duration: 0.45, delay: i * 0.055, ease: "easeOut" }}
+                transition={{ duration: 0.55, delay: i * 0.07, ease: "easeOut" }}
                 onClick={() =>
                   setSelected({
-                    name: char.name.native || char.name.full,
-                    cvName:
-                      voiceActor?.name.native || voiceActor?.name.full || "—",
+                    name: displayName,
+                    cvName: cvDisplayName ?? "—",
                     description: char.description,
                     imageSrc: char.image.large,
                     labMemberNo: char.labMemberNo,
                   })
                 }
-                onHoverStart={() => setHoveredId(char.id)}
-                onHoverEnd={() => setHoveredId(null)}
               >
-                {/* 円形アバター（mask-image でシャープな円） */}
-                <motion.div
-                  className="cg-avatar-wrap"
-                  animate={{ scale: isHovered ? 1.08 : 1 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                >
-                  {/* 外枠リング（accent-color） */}
-                  <div className="cg-avatar-ring" />
-
+                <div className="cg-portrait">
                   <img
-                    src={char.image.medium}
-                    alt={char.name.native || char.name.full}
-                    className="cg-avatar"
-                    style={isHovered ? circleClipHoverStyle : circleClipStyle}
+                    src={char.image.large}
+                    alt={displayName}
+                    className="cg-portrait-img"
                     onError={(e) => {
                       (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE;
                     }}
                   />
-                </motion.div>
-
-                {/* キャラクター名 */}
-                <motion.p
-                  className="cg-card-name"
-                  animate={{ opacity: isHovered ? 1 : 0.7 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  {char.name.native || char.name.full}
-                </motion.p>
-
-                {/* CV（ホバー時のみ表示） */}
-                <AnimatePresence>
-                  {isHovered && voiceActor && (
-                    <motion.p
-                      className="cg-card-cv"
-                      initial={{ opacity: 0, y: 4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 4 }}
-                      transition={{ duration: 0.18 }}
-                    >
-                      CV: {voiceActor.name.native || voiceActor.name.full}
-                    </motion.p>
-                  )}
-                </AnimatePresence>
+                  <div className="cg-portrait-overlay">
+                    <p className="cg-card-name-vert">{displayName}</p>
+                    {cvDisplayName && (
+                      <div className="cg-card-cv-pill">
+                        <span className="cg-card-cv-badge">CV</span>
+                        <span className="cg-card-cv-name">{cvDisplayName}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </motion.div>
             );
           })}
@@ -139,7 +144,6 @@ export default function CharacterGrid({ anime }: Props) {
             transition={{ duration: 0.25 }}
             onClick={() => setSelected(null)}
           >
-            {/* clip-path ダイヤモンド→長方形アニメーション */}
             <motion.div
               className="cg-modal"
               initial={{
@@ -160,7 +164,6 @@ export default function CharacterGrid({ anime }: Props) {
               transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* 閉じるボタン */}
               <button
                 className="cg-modal-close"
                 onClick={() => setSelected(null)}
@@ -168,7 +171,7 @@ export default function CharacterGrid({ anime }: Props) {
                 ✕
               </button>
 
-              {/* 左: キャラクター画像（なるべく全体図） */}
+              {/* 左: キャラクター画像（contain で全体表示） */}
               <div className="cg-modal-img-wrap">
                 <img
                   src={selected.imageSrc}
@@ -178,30 +181,45 @@ export default function CharacterGrid({ anime }: Props) {
                     (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE;
                   }}
                 />
-                {/* 下部グラデーションフェード */}
-                <div className="cg-modal-img-fade" />
               </div>
 
               {/* 右: 名前・CV・説明 */}
               <div className="cg-modal-info">
-                {/* 縦書き名前 + CV カプセル */}
                 <div className="cg-modal-identity">
                   <p className="cg-modal-name-vert">{selected.name}</p>
-
                   <div className="cg-modal-cv-pill">
                     <span className="cg-modal-cv-badge">CV</span>
                     <span className="cg-modal-cv-text">{selected.cvName}</span>
                   </div>
                 </div>
 
-                {/* ラボメン番号など追加情報 */}
                 {selected.labMemberNo && (
                   <p className="cg-modal-lab">{selected.labMemberNo}</p>
                 )}
 
-                {/* 紹介文 */}
-                {selected.description && (
+                {/* 説明文（AniList → Wikipedia の優先順で表示） */}
+                {selected.description ? (
                   <p className="cg-modal-desc">{selected.description}</p>
+                ) : isFetchingDesc ? (
+                  <p className="cg-modal-desc-loading">説明文を取得中…</p>
+                ) : wikiDescription ? (
+                  <>
+                    <p className="cg-modal-desc">{wikiDescription}</p>
+                    <p className="cg-modal-source">
+                      出典:{" "}
+                      <a
+                        href={`https://ja.wikipedia.org/wiki/${encodeURIComponent(selected.name)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="cg-modal-source-link"
+                      >
+                        Wikipedia
+                      </a>{" "}
+                      (CC BY-SA 4.0)
+                    </p>
+                  </>
+                ) : (
+                  <p className="cg-modal-desc-empty">説明文がありません</p>
                 )}
               </div>
             </motion.div>

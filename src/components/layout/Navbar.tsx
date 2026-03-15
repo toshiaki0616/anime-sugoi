@@ -30,6 +30,9 @@ export default function Navbar() {
       <div className="navbar-links">
         <NavLink to="/" label="HOME" active={location.pathname === "/"} />
         <NavLink to="/css-showcase" label="CSS" active={location.pathname === "/css-showcase"} />
+        <NavLink to="/svg-showcase" label="SVG" active={location.pathname === "/svg-showcase"} />
+        <NavLink to="/js-showcase" label="JS" active={location.pathname === "/js-showcase"} />
+        <NavLink to="/react-showcase" label="REACT" active={location.pathname === "/react-showcase"} />
       </div>
     </motion.nav>
   );

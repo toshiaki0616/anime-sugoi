@@ -16,10 +16,17 @@ export default function HomePage() {
           <div className="section-header">
             <h2 className="section-heading">
               <span className="section-num">// 001</span>
-              作品一覧
+              今季の注目作
             </h2>
+            <p className="section-lead">
+              シーズンの熱量が伝わる作品を、ビジュアルと空気感ごと拾い上げるセレクション。
+            </p>
           </div>
-          <AnimeGrid animeList={data} loading={loading} />
+          <div className="grid-shell">
+            <div className="grid-shell-line grid-shell-line-top" aria-hidden="true" />
+            <div className="grid-shell-line grid-shell-line-bottom" aria-hidden="true" />
+            <AnimeGrid animeList={data} loading={loading} />
+          </div>
         </section>
       </main>
     </PageTransition>

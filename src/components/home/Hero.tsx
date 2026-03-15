@@ -22,7 +22,6 @@ export default function Hero() {
     const bg = bgRef.current;
     if (!title || !subtitle || !eyebrow || !meta || !bg) return;
 
-    // テキストスプリット + バネ着地
     const split = new SplitType(title, { types: "chars" });
     const chars = split.chars ?? [];
 
@@ -41,7 +40,6 @@ export default function Hero() {
       .to(subtitle, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.3")
       .to(meta, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, "-=0.2");
 
-    // パララックス: スクロールで背景がゆっくり上昇
     gsap.to(bg, {
       y: "35%",
       ease: "none",
@@ -53,7 +51,6 @@ export default function Hero() {
       },
     });
 
-    // グロー光源がスクロールで異なる速度で動く
     gsap.to(glow1Ref.current, {
       y: "-20%",
       x: "5%",
@@ -78,6 +75,11 @@ export default function Hero() {
     <section className="hero">
       <div ref={bgRef} className="hero-bg">
         <div className="hero-grid" />
+        <div className="hero-rings" aria-hidden="true">
+          <span className="hero-ring hero-ring-1" />
+          <span className="hero-ring hero-ring-2" />
+        </div>
+        <div className="hero-noise-beam" aria-hidden="true" />
         <div ref={glow1Ref} className="hero-glow hero-glow-1" />
         <div ref={glow2Ref} className="hero-glow hero-glow-2" />
       </div>
@@ -85,12 +87,19 @@ export default function Hero() {
         <div ref={eyebrowRef} className="hero-eyebrow">// ANIME CURATION SYSTEM v1.0</div>
         <h1 ref={titleRef} className="hero-title">SUGOI</h1>
         <p ref={subtitleRef} className="hero-subtitle">
-          アニメの「すごい」を、<br />言葉ではなくデザインで伝える。
+          アニメの「すごい」を
+          <br />
+          感情まで含めてデザインする。
         </p>
         <div ref={metaRef} className="hero-meta">
-          <span>15年分のキュレーション</span>
+          <span>15 YEARS OF CULTURE</span>
           <span className="meta-divider">|</span>
-          <span>5作品</span>
+          <span>5 CURATED TITLES</span>
+        </div>
+        <div className="hero-status-band" aria-hidden="true">
+          <span>LIVE CURATION</span>
+          <span>SEASONAL PICKS</span>
+          <span>MOTION UI</span>
         </div>
       </div>
       <div className="hero-scroll-hint">

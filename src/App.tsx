@@ -9,6 +9,9 @@ import HomePage from "./pages/HomePage";
 
 const AnimeDetailPage = lazy(() => import("./pages/AnimeDetailPage"));
 const CssShowcasePage = lazy(() => import("./pages/CssShowcasePage"));
+const SvgShowcasePage = lazy(() => import("./pages/SvgShowcasePage"));
+const JsShowcasePage = lazy(() => import("./pages/JsShowcasePage"));
+const ReactShowcasePage = lazy(() => import("./pages/ReactShowcasePage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 function AnimatedRoutes() {
@@ -30,6 +33,30 @@ function AnimatedRoutes() {
           element={
             <Suspense fallback={null}>
               <CssShowcasePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/svg-showcase"
+          element={
+            <Suspense fallback={null}>
+              <SvgShowcasePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/js-showcase"
+          element={
+            <Suspense fallback={null}>
+              <JsShowcasePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/react-showcase"
+          element={
+            <Suspense fallback={null}>
+              <ReactShowcasePage />
             </Suspense>
           }
         />

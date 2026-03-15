@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 
 // ============================================================
 // 核心技術 (1–12)
@@ -415,6 +415,433 @@ function DemoScrollDriven() {
 // カテゴリ定義
 // ============================================================
 
+function DemoOrbitPulse() {
+  return (
+    <div className="demo-orbit-wrap">
+      <div className="demo-orbit-core" />
+      <div className="demo-orbit-ring demo-orbit-ring-a">
+        <span className="demo-orbit-dot" />
+      </div>
+      <div className="demo-orbit-ring demo-orbit-ring-b">
+        <span className="demo-orbit-dot" />
+      </div>
+    </div>
+  );
+}
+
+function DemoLoadingBands() {
+  return (
+    <div className="demo-loadingbands-wrap" aria-label="loading bands">
+      {"LOADING".split("").map((char, index) => (
+        <span
+          key={`${char}-${index}`}
+          className="demo-loadingbands-char"
+          style={{ animationDelay: `${index * 0.08}s` }}
+        >
+          {char}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function DemoShutterReveal() {
+  return (
+    <div className="demo-shutter-wrap">
+      <div className="demo-shutter-panel" />
+      <div className="demo-shutter-panel demo-shutter-panel-b" />
+      <span className="demo-shutter-text">REVEAL</span>
+    </div>
+  );
+}
+
+function DemoRippleField() {
+  return (
+    <div className="demo-ripple-wrap">
+      <span className="demo-ripple-circle demo-ripple-circle-a" />
+      <span className="demo-ripple-circle demo-ripple-circle-b" />
+      <span className="demo-ripple-circle demo-ripple-circle-c" />
+      <div className="demo-ripple-core" />
+    </div>
+  );
+}
+
+function DemoRollingLoader() {
+  return (
+    <div className="demo-rolling-wrap">
+      <div className="demo-rolling-track">
+        <span className="demo-rolling-ball" />
+        <span className="demo-rolling-ball" />
+        <span className="demo-rolling-ball" />
+      </div>
+      <small className="demo-hint">offset timing loop</small>
+    </div>
+  );
+}
+
+function DemoSplitLayers() {
+  return (
+    <div className="demo-splitlayers-wrap" aria-label="split layers">
+      <span className="demo-splitlayers-back">PANTRY CLUB</span>
+      <span className="demo-splitlayers-front">PANTRY CLUB</span>
+    </div>
+  );
+}
+
+function DemoLiftCard() {
+  return (
+    <div className="demo-liftcard-wrap">
+      <div className="demo-liftcard-glow" />
+      <div className="demo-liftcard-card">
+        <small>CASE STUDY</small>
+        <strong>Motion Card</strong>
+      </div>
+    </div>
+  );
+}
+
+function DemoSwingBadge() {
+  return (
+    <div className="demo-swingbadge-wrap">
+      <div className="demo-swingbadge-pin" />
+      <div className="demo-swingbadge-tag">HELLO</div>
+    </div>
+  );
+}
+
+function DemoStretchType() {
+  return (
+    <div className="demo-stretchtype-wrap" aria-label="stretch type">
+      {"MOTION".split("").map((char, index) => (
+        <span
+          key={`${char}-${index}`}
+          className="demo-stretchtype-char"
+          style={{ animationDelay: `${index * 0.08}s` }}
+        >
+          {char}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function DemoStackTicker() {
+  const words = ["PANTRY", "CLUB", "MOTION"];
+  return (
+    <div className="demo-stackticker-wrap" aria-label="stack ticker">
+      <div className="demo-stackticker-viewport">
+        <div className="demo-stackticker-track">
+          {[...words, ...words].map((word, index) => (
+            <span key={`${word}-${index}`} className="demo-stackticker-item">{word}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DemoOutlineBadge() {
+  return (
+    <div className="demo-outlinebadge-wrap">
+      <span className="demo-outlinebadge-fill">PANTRY CLUB</span>
+      <span className="demo-outlinebadge-stroke">PANTRY CLUB</span>
+    </div>
+  );
+}
+
+function DemoCornerSweep() {
+  return (
+    <div className="demo-cornersweep-wrap">
+      <div className="demo-cornersweep-card">
+        <span className="demo-cornersweep-label">ARCHIVE 04</span>
+      </div>
+    </div>
+  );
+}
+
+function DemoDepthMarquee() {
+  return (
+    <div className="demo-depthmarquee-wrap" aria-label="depth marquee">
+      <div className="demo-depthmarquee-row demo-depthmarquee-row-a">
+        <span>PANTRY CLUB</span>
+        <span>PANTRY CLUB</span>
+        <span>PANTRY CLUB</span>
+      </div>
+      <div className="demo-depthmarquee-row demo-depthmarquee-row-b">
+        <span>MOTION STUDY</span>
+        <span>MOTION STUDY</span>
+        <span>MOTION STUDY</span>
+      </div>
+    </div>
+  );
+}
+
+function DemoScanlineMask() {
+  return (
+    <div className="demo-scanline-wrap">
+      <span className="demo-scanline-text">PANTRY CLUB</span>
+      <div className="demo-scanline-bar" />
+    </div>
+  );
+}
+
+function DemoPulseGrid() {
+  return (
+    <div className="demo-pulsegrid-wrap">
+      {Array.from({ length: 16 }, (_, index) => (
+        <span
+          key={index}
+          className="demo-pulsegrid-cell"
+          style={{ animationDelay: `${(index % 4) * 0.08 + Math.floor(index / 4) * 0.08}s` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function DemoRotatingBorder() {
+  return (
+    <div className="demo-rotatingborder-wrap">
+      <div className="demo-rotatingborder-card">
+        <span>FRAME</span>
+      </div>
+    </div>
+  );
+}
+
+function DemoDotMatrix() {
+  return (
+    <div className="demo-dotmatrix-wrap">
+      {"CLUB".split("").map((char, index) => (
+        <span key={`${char}-${index}`} className="demo-dotmatrix-char">{char}</span>
+      ))}
+    </div>
+  );
+}
+
+function DemoEqualizer() {
+  return (
+    <div className="demo-equalizer-wrap">
+      {Array.from({ length: 9 }, (_, index) => (
+        <span key={index} className="demo-equalizer-bar" style={{ animationDelay: `${index * 0.08}s` }} />
+      ))}
+    </div>
+  );
+}
+
+function DemoPrismButton() {
+  return (
+    <button className="demo-prismbutton-wrap" type="button">
+      <span>OPEN</span>
+    </button>
+  );
+}
+
+function DemoEchoText() {
+  return (
+    <div className="demo-echotext-wrap">
+      <span className="demo-echotext-layer">PANTRY</span>
+      <span className="demo-echotext-layer">PANTRY</span>
+      <span className="demo-echotext-layer">PANTRY</span>
+    </div>
+  );
+}
+
+function DemoLadderBars() {
+  return (
+    <div className="demo-ladderbars-wrap">
+      {Array.from({ length: 6 }, (_, index) => (
+        <span key={index} className="demo-ladderbars-step" style={{ animationDelay: `${index * 0.1}s` }} />
+      ))}
+    </div>
+  );
+}
+
+function DemoSpotlightSweep() {
+  return (
+    <div className="demo-spotlight-wrap">
+      <span className="demo-spotlight-text">STAGE</span>
+      <div className="demo-spotlight-beam" />
+    </div>
+  );
+}
+
+function DemoTiltStack() {
+  return (
+    <div className="demo-tiltstack-wrap">
+      <span className="demo-tiltstack-card demo-tiltstack-card-a" />
+      <span className="demo-tiltstack-card demo-tiltstack-card-b" />
+      <span className="demo-tiltstack-card demo-tiltstack-card-c" />
+    </div>
+  );
+}
+
+function DemoRadarSweep() {
+  return (
+    <div className="demo-radar-wrap">
+      <span className="demo-radar-ring demo-radar-ring-a" />
+      <span className="demo-radar-ring demo-radar-ring-b" />
+      <span className="demo-radar-ring demo-radar-ring-c" />
+      <div className="demo-radar-sweep" />
+      <div className="demo-radar-dot" />
+    </div>
+  );
+}
+
+function DemoPixelBlink() {
+  return (
+    <div className="demo-pixelblink-wrap">
+      {Array.from({ length: 25 }, (_, index) => (
+        <span
+          key={index}
+          className="demo-pixelblink-pixel"
+          style={{ animationDelay: `${(index % 5) * 0.05 + Math.floor(index / 5) * 0.05}s` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function DemoRibbonFlip() {
+  return (
+    <div className="demo-ribbonflip-wrap">
+      <span className="demo-ribbonflip-front">NEW</span>
+      <span className="demo-ribbonflip-back">LIVE</span>
+    </div>
+  );
+}
+
+function DemoOrbitText() {
+  return (
+    <div className="demo-orbittext-wrap">
+      <span className="demo-orbittext-core">PC</span>
+      <div className="demo-orbittext-ring">
+        <span className="demo-orbittext-word">PANTRY CLUB PANTRY CLUB</span>
+      </div>
+    </div>
+  );
+}
+
+function DemoPrismLoader() {
+  return (
+    <div className="demo-prismloader-wrap">
+      <span className="demo-prismloader-face demo-prismloader-face-a" />
+      <span className="demo-prismloader-face demo-prismloader-face-b" />
+      <span className="demo-prismloader-face demo-prismloader-face-c" />
+    </div>
+  );
+}
+
+function DemoRingSteps() {
+  return (
+    <div className="demo-ringsteps-wrap">
+      {Array.from({ length: 4 }, (_, index) => (
+        <span key={index} className="demo-ringsteps-ring" style={{ animationDelay: `${index * 0.2}s` }} />
+      ))}
+    </div>
+  );
+}
+
+function DemoWaveDots() {
+  return (
+    <div className="demo-wavedots-wrap">
+      {Array.from({ length: 8 }, (_, index) => (
+        <span key={index} className="demo-wavedots-dot" style={{ animationDelay: `${index * 0.08}s` }} />
+      ))}
+    </div>
+  );
+}
+
+function DemoTunnelRings() {
+  return (
+    <div className="demo-tunnelrings-wrap">
+      {Array.from({ length: 5 }, (_, index) => (
+        <span key={index} className="demo-tunnelrings-ring" style={{ animationDelay: `${index * 0.16}s` }} />
+      ))}
+    </div>
+  );
+}
+
+function DemoSkewPanels() {
+  return (
+    <div className="demo-skewpanels-wrap">
+      <span className="demo-skewpanels-panel" />
+      <span className="demo-skewpanels-panel" />
+      <span className="demo-skewpanels-panel" />
+    </div>
+  );
+}
+
+function DemoBeamButton() {
+  return (
+    <button className="demo-beambutton-wrap" type="button">
+      <span>ENTER</span>
+    </button>
+  );
+}
+
+function DemoOrbitBadges() {
+  return (
+    <div className="demo-orbitbadges-wrap">
+      <div className="demo-orbitbadges-core">PC</div>
+      <span className="demo-orbitbadges-badge demo-orbitbadges-a">UI</span>
+      <span className="demo-orbitbadges-badge demo-orbitbadges-b">CSS</span>
+      <span className="demo-orbitbadges-badge demo-orbitbadges-c">LAB</span>
+    </div>
+  );
+}
+
+function DemoFoldingSquares() {
+  return (
+    <div className="demo-foldingsquares-wrap">
+      <span className="demo-foldingsquares-cell" />
+      <span className="demo-foldingsquares-cell" />
+      <span className="demo-foldingsquares-cell" />
+      <span className="demo-foldingsquares-cell" />
+    </div>
+  );
+}
+
+function DemoSignalBars() {
+  return (
+    <div className="demo-signalbars-wrap">
+      {Array.from({ length: 5 }, (_, index) => (
+        <span key={index} className="demo-signalbars-bar" />
+      ))}
+    </div>
+  );
+}
+
+function DemoFlipWords() {
+  return (
+    <div className="demo-flipwords-wrap">
+      <div className="demo-flipwords-track">
+        <span>CREATE</span>
+        <span>MOTION</span>
+        <span>CREATE</span>
+      </div>
+    </div>
+  );
+}
+
+function DemoDiagonalGrid() {
+  return (
+    <div className="demo-diagonalgrid-wrap">
+      <div className="demo-diagonalgrid-overlay" />
+      <span className="demo-diagonalgrid-text">GRID</span>
+    </div>
+  );
+}
+
+function DemoHaloBadge() {
+  return (
+    <div className="demo-halobadge-wrap">
+      <div className="demo-halobadge-ring" />
+      <div className="demo-halobadge-chip">PANTRY CLUB</div>
+    </div>
+  );
+}
+
 const CATEGORIES = [
   {
     name: "核心技術",
@@ -477,20 +904,106 @@ const CATEGORIES = [
       { id: 31, name: "Scroll-driven Animation",      usage: "animation-timeline: scroll() — Chrome 115+",   Demo: DemoScrollDriven },
     ],
   },
+  {
+    name: "Inspired Motions",
+    items: [
+      { id: 32, name: "Orbit Pulse", usage: "rotate + nested rings + delayed orbital dots", Demo: DemoOrbitPulse },
+      { id: 33, name: "Loading Bands", usage: "per-letter stagger + translateY + glow fade", Demo: DemoLoadingBands },
+      { id: 34, name: "Shutter Reveal", usage: "sliding panels + masked text reveal", Demo: DemoShutterReveal },
+      { id: 35, name: "Ripple Field", usage: "concentric scale waves + center pulse", Demo: DemoRippleField },
+      { id: 36, name: "Rolling Loader", usage: "staggered bounce + track lighting", Demo: DemoRollingLoader },
+      { id: 37, name: "Split Layers", usage: "offset text layers + subtle drift + mix contrast", Demo: DemoSplitLayers },
+      { id: 38, name: "Lift Card", usage: "hoverless floating card + sheen + ambient glow", Demo: DemoLiftCard },
+      { id: 39, name: "Swing Badge", usage: "pendulum rotation around top anchor", Demo: DemoSwingBadge },
+      { id: 40, name: "Stretch Type", usage: "scaleY / translateY stagger for elastic typography", Demo: DemoStretchType },
+      { id: 41, name: "Stack Ticker", usage: "vertical loop ticker with stacked branding words", Demo: DemoStackTicker },
+      { id: 42, name: "Outline Badge", usage: "filled text + outline clone + offset drift", Demo: DemoOutlineBadge },
+      { id: 43, name: "Corner Sweep", usage: "diagonal sheen + framed card corners", Demo: DemoCornerSweep },
+      { id: 44, name: "Depth Marquee", usage: "two marquee rows with parallax speed difference", Demo: DemoDepthMarquee },
+    ],
+  },
+  {
+    name: "Auto Batch",
+    items: [
+      { id: 45, name: "Scanline Mask", usage: "moving scanline over branding text", Demo: DemoScanlineMask },
+      { id: 46, name: "Pulse Grid", usage: "grid cells pulsing on a diagonal rhythm", Demo: DemoPulseGrid },
+      { id: 47, name: "Rotating Border", usage: "conic-gradient border rotating around a card", Demo: DemoRotatingBorder },
+      { id: 48, name: "Dot Matrix", usage: "pixel-like glowing typography", Demo: DemoDotMatrix },
+      { id: 49, name: "Equalizer", usage: "staggered vertical bars like audio levels", Demo: DemoEqualizer },
+      { id: 50, name: "Prism Button", usage: "iridescent button sheen with depth", Demo: DemoPrismButton },
+      { id: 51, name: "Echo Text", usage: "stacked duplicate text with drifting offsets", Demo: DemoEchoText },
+      { id: 52, name: "Ladder Bars", usage: "sequential bars rising like steps", Demo: DemoLadderBars },
+      { id: 53, name: "Spotlight Sweep", usage: "soft beam crossing a stage wordmark", Demo: DemoSpotlightSweep },
+      { id: 54, name: "Tilt Stack", usage: "floating stacked cards with offset motion", Demo: DemoTiltStack },
+      { id: 55, name: "Radar Sweep", usage: "rotating radar beam over concentric rings", Demo: DemoRadarSweep },
+      { id: 56, name: "Pixel Blink", usage: "pixel grid blinking in wave order", Demo: DemoPixelBlink },
+      { id: 57, name: "Ribbon Flip", usage: "two-faced label rotating on the X axis", Demo: DemoRibbonFlip },
+      { id: 58, name: "Orbit Text", usage: "circular word track rotating around a core", Demo: DemoOrbitText },
+      { id: 59, name: "Prism Loader", usage: "triangle faces phasing with delayed opacity", Demo: DemoPrismLoader },
+      { id: 60, name: "Ring Steps", usage: "nested rings scaling outward in sequence", Demo: DemoRingSteps },
+    ],
+  },
+  {
+    name: "Auto Batch 2",
+    items: [
+      { id: 61, name: "Wave Dots", usage: "dots bouncing in a traveling wave", Demo: DemoWaveDots },
+      { id: 62, name: "Tunnel Rings", usage: "rings scaling like a forward tunnel", Demo: DemoTunnelRings },
+      { id: 63, name: "Skew Panels", usage: "angled panels sliding with stagger", Demo: DemoSkewPanels },
+      { id: 64, name: "Beam Button", usage: "button with sweeping light beam", Demo: DemoBeamButton },
+      { id: 65, name: "Orbit Badges", usage: "three labels orbiting around a center", Demo: DemoOrbitBadges },
+      { id: 66, name: "Folding Squares", usage: "2x2 loader folding by opacity and scale", Demo: DemoFoldingSquares },
+      { id: 67, name: "Signal Bars", usage: "signal-strength style stepped bars", Demo: DemoSignalBars },
+      { id: 68, name: "Flip Words", usage: "vertical text flip ticker", Demo: DemoFlipWords },
+      { id: 69, name: "Diagonal Grid", usage: "moving diagonal grid over a panel", Demo: DemoDiagonalGrid },
+      { id: 70, name: "Halo Badge", usage: "center chip with breathing halo ring", Demo: DemoHaloBadge },
+    ],
+  },
 ];
+
+type ShowcaseItem = {
+  id: number;
+  name: string;
+  usage: string;
+  Demo: () => ReactNode;
+};
+
+function formatDemoSource(source: string) {
+  return source
+    .replace(/\s+/g, " ")
+    .replace(/\)\s*=>\s*/g, ") => ")
+    .replace(/\s*{\s*/g, " {\n  ")
+    .replace(/;\s*/g, ";\n  ")
+    .replace(/}\s*$/g, "\n}");
+}
+
+function extractDemoClasses(source: string) {
+  const matches = [...source.matchAll(/className="([^"]+)"/g)]
+    .flatMap((match) => match[1].split(" "))
+    .filter(Boolean);
+
+  return [...new Set(matches)].slice(0, 10);
+}
 
 // ============================================================
 // ShowcaseCard
 // ============================================================
 
-function ShowcaseCard({ id, name, usage, Demo }: {
-  id: number;
-  name: string;
-  usage: string;
-  Demo: () => JSX.Element;
+function ShowcaseCard({ id, name, usage, Demo, onSelect }: ShowcaseItem & {
+  onSelect: (item: ShowcaseItem) => void;
 }) {
   return (
-    <article className="showcase-card">
+    <article
+      className="showcase-card"
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect({ id, name, usage, Demo })}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSelect({ id, name, usage, Demo });
+        }
+      }}
+    >
       <div className="showcase-card-head">
         <span className="showcase-num">{String(id).padStart(2, "0")}</span>
         <div>
@@ -510,11 +1023,15 @@ function ShowcaseCard({ id, name, usage, Demo }: {
 // ============================================================
 
 export default function CssShowcasePage() {
+  const [selectedItem, setSelectedItem] = useState<ShowcaseItem | null>(null);
+  const sourceCode = selectedItem ? formatDemoSource(selectedItem.Demo.toString()) : "";
+  const classNames = selectedItem ? extractDemoClasses(selectedItem.Demo.toString()) : [];
+
   return (
     <div className="css-showcase-page">
       <header className="showcase-header">
         <h1 className="showcase-title">CSS技術ショーケース</h1>
-        <p className="showcase-subtitle">31のCSS技術を体験できるデモ集</p>
+        <p className="showcase-subtitle">60のCSS技術を体験できるデモ集</p>
       </header>
 
       {CATEGORIES.map((cat) => (
@@ -522,11 +1039,52 @@ export default function CssShowcasePage() {
           <h2 className="showcase-category-title">{cat.name}</h2>
           <div className="showcase-grid">
             {cat.items.map((item) => (
-              <ShowcaseCard key={item.id} {...item} />
+              <ShowcaseCard key={item.id} {...item} onSelect={setSelectedItem} />
             ))}
           </div>
         </section>
       ))}
+
+      {selectedItem && (
+        <div className="showcase-code-backdrop" onClick={() => setSelectedItem(null)}>
+          <div className="showcase-code-modal" onClick={(event) => event.stopPropagation()}>
+            <button className="showcase-code-close" onClick={() => setSelectedItem(null)} aria-label="close code preview">
+              ×
+            </button>
+            <div className="showcase-code-head">
+              <div>
+                <div className="showcase-code-kicker">USE THIS EFFECT</div>
+                <h2 className="showcase-code-title">
+                  {String(selectedItem.id).padStart(2, "0")} / {selectedItem.name}
+                </h2>
+                <p className="showcase-code-usage">{selectedItem.usage}</p>
+              </div>
+              <div className="showcase-code-preview">
+                <selectedItem.Demo />
+              </div>
+            </div>
+
+            <div className="showcase-code-block">
+              <h3 className="showcase-code-label">Prompt Hint</h3>
+              <pre className="showcase-code-pre"><code>{`この表現を使ってください: ${selectedItem.name} (#${String(selectedItem.id).padStart(2, "0")})`}</code></pre>
+            </div>
+
+            <div className="showcase-code-block">
+              <h3 className="showcase-code-label">Detected Class Names</h3>
+              <pre className="showcase-code-pre"><code>{classNames.map((className) => `.${className}`).join("\n")}</code></pre>
+            </div>
+
+            <div className="showcase-code-block">
+              <h3 className="showcase-code-label">Demo Function Source</h3>
+              <pre className="showcase-code-pre"><code>{sourceCode}</code></pre>
+            </div>
+
+            <p className="showcase-code-note">
+              CSS 本体は <code>src/index.css</code>、デモ構造は <code>src/pages/CssShowcasePage.tsx</code> にあります。
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

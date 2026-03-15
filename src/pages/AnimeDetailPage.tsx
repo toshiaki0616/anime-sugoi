@@ -21,7 +21,7 @@ import { STATUS_JA, SEASON_JA, GENRE_JA } from "../lib/labels";
 gsap.registerPlugin(ScrollTrigger);
 
 export default function AnimeDetailPage() {
-  const lenisRef = useLenis();
+  useLenis();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const animeId = parseInt(id ?? "0", 10);
