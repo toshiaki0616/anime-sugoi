@@ -15,6 +15,8 @@ import VideoGallery from "../components/detail/VideoGallery";
 import GlitchEffect from "../components/detail/GlitchEffect";
 import ParticleBackground from "../components/shared/ParticleBackground";
 import PageTransition from "../components/layout/PageTransition";
+import AnimeShowcaseSection from "../components/detail/AnimeShowcaseSection";
+import TechniqueShowcaseSection from "../components/detail/TechniqueShowcaseSection";
 import { getTheme } from "../lib/animeThemes";
 import { STATUS_JA, SEASON_JA, GENRE_JA } from "../lib/labels";
 
@@ -145,6 +147,14 @@ export default function AnimeDetailPage() {
           <YouTubeEmbed anime={anime} />
           <VideoGallery anime={anime} />
           <FanVideoSection anime={anime} />
+
+          {/* 超かぐや姫専用: Anime Showcase + Technique Showcase */}
+          {anime.id === 201903 && (
+            <>
+              <AnimeShowcaseSection />
+              <TechniqueShowcaseSection />
+            </>
+          )}
         </div>
       </div>
     </PageTransition>
