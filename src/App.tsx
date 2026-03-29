@@ -13,6 +13,7 @@ const SvgShowcasePage = lazy(() => import("./pages/SvgShowcasePage"));
 const JsShowcasePage = lazy(() => import("./pages/JsShowcasePage"));
 const ReactShowcasePage = lazy(() => import("./pages/ReactShowcasePage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
+const GifMakerPage = lazy(() => import("./pages/showcase/GifMaker"));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -57,6 +58,14 @@ function AnimatedRoutes() {
           element={
             <Suspense fallback={null}>
               <ReactShowcasePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/showcase/gif-maker"
+          element={
+            <Suspense fallback={null}>
+              <GifMakerPage />
             </Suspense>
           }
         />

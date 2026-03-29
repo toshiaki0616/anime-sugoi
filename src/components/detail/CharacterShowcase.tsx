@@ -103,6 +103,7 @@ export default function CharacterShowcase({ anime }: Props) {
                       src={char.image.large}
                       alt={char.name.native || char.name.full}
                       className="cs-carousel-img"
+                      referrerPolicy="no-referrer"
                       onError={(e) => {
                         (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE;
                       }}
@@ -215,6 +216,7 @@ export default function CharacterShowcase({ anime }: Props) {
                   src={selectedChar.imageSrc}
                   alt={selectedChar.name}
                   className="char-modal-image"
+                  referrerPolicy="no-referrer"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE;
                   }}

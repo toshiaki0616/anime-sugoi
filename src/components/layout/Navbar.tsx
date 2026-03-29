@@ -33,6 +33,7 @@ export default function Navbar() {
         <NavLink to="/svg-showcase" label="SVG" active={location.pathname === "/svg-showcase"} />
         <NavLink to="/js-showcase" label="JS" active={location.pathname === "/js-showcase"} />
         <NavLink to="/react-showcase" label="REACT" active={location.pathname === "/react-showcase"} />
+        <NavLink to="/showcase/gif-maker" label="GIF" active={location.pathname === "/showcase/gif-maker"} />
       </div>
     </motion.nav>
   );

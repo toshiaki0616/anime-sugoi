@@ -70,6 +70,11 @@ export async function fetchAnimeById(id: number): Promise<AnimeData | null> {
   if (cache.has(id)) return cache.get(id)!;
 
   const sample = sampleAnimeList.find((a) => a.id === id);
+  if (sample?.forceLocal) {
+    cache.set(id, sample);
+    return sample;
+  }
+
   try {
     const res = await fetch(ANILIST_API, {
       method: "POST",
@@ -88,7 +93,15 @@ export async function fetchAnimeById(id: number): Promise<AnimeData | null> {
       characters: {
         nodes: (media.characters?.nodes ?? []).map((node: AnimeData["characters"]["nodes"][number]) => {
           // sampleAnime のキャラクター説明・ラボメン番号を API データにマージ
-          const sampleChar = sample?.characters.nodes.find((c) => c.id === node.id);
+          const sampleChar =
+            sample?.characters.nodes.find((c) => c.id === node.id) ??
+            sample?.characters.nodes.find(
+              (c) =>
+                c.name.full === node.name.full ||
+                c.name.native === node.name.native ||
+                c.name.native === node.name.full ||
+                c.name.full === node.name.native
+            );
           return sampleChar
             ? { ...node, description: sampleChar.description, labMemberNo: sampleChar.labMemberNo }
             : node;
@@ -109,6 +122,9 @@ export async function fetchAnimeById(id: number): Promise<AnimeData | null> {
       // sampleAnime にしか存在しないフィールドを引き継ぐ
       music: sample?.music,
       fanVideos: sample?.fanVideos,
+      promotionalVideos: sample?.promotionalVideos,
+      communityReviews: sample?.communityReviews,
+      relatedContents: sample?.relatedContents,
     };
     cache.set(id, result);
     return result;

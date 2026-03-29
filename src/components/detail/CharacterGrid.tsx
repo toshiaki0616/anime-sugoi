@@ -113,6 +113,7 @@ export default function CharacterGrid({ anime }: Props) {
                     src={char.image.large}
                     alt={displayName}
                     className="cg-portrait-img"
+                    referrerPolicy="no-referrer"
                     onError={(e) => {
                       (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE;
                     }}
@@ -177,6 +178,7 @@ export default function CharacterGrid({ anime }: Props) {
                   src={selected.imageSrc}
                   alt={selected.name}
                   className="cg-modal-img"
+                  referrerPolicy="no-referrer"
                   onError={(e) => {
                     (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE;
                   }}

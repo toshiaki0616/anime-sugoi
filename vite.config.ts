@@ -4,6 +4,11 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    headers: {
+      // ffmpeg.wasm が SharedArrayBuffer を使うために必要
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
+    },
     proxy: {
       // AniList GraphQL API の CORS を回避するため開発サーバー経由でプロキシ
       "/api/anilist": {
@@ -11,6 +16,12 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: () => "/",
       },
+    },
+  },
+  preview: {
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
     },
   },
   build: {

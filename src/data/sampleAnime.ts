@@ -13,6 +13,19 @@ export interface FanVideo {
   views: string; // 例: "200万+"
 }
 
+export interface CommunityReview {
+  title: string;
+  summary: string;
+  source?: string;
+  href?: string;
+}
+
+export interface RelatedContent {
+  title: string;
+  href: string;
+  meta?: string;
+}
+
 export interface AnimeData {
   id: number;
   title: {
@@ -59,6 +72,58 @@ export interface AnimeData {
   fanVideos?: FanVideo[];
   // 作品ページに埋め込む動画（予告・特報など）最大3件
   promotionalVideos?: { title: string; youtubeId?: string }[];
+  /** ホームページのバックドロップスライダー対象 */
+  communityReviews?: CommunityReview[];
+  relatedContents?: RelatedContent[];
+  featured?: boolean;
+  forceLocal?: boolean;
+}
+
+function createGradientArt(
+  title: string,
+  subtitle: string,
+  from: string,
+  to: string,
+  width: number,
+  height: number
+): string {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="${from}" />
+          <stop offset="100%" stop-color="${to}" />
+        </linearGradient>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#bg)" />
+      <circle cx="${width * 0.75}" cy="${height * 0.18}" r="${Math.max(width, height) * 0.18}" fill="rgba(255,255,255,0.14)" />
+      <circle cx="${width * 0.2}" cy="${height * 0.8}" r="${Math.max(width, height) * 0.12}" fill="rgba(255,255,255,0.08)" />
+      <path d="M0 ${height * 0.7} C ${width * 0.22} ${height * 0.55}, ${width * 0.44} ${height * 0.82}, ${width} ${height * 0.56} L ${width} ${height} L 0 ${height} Z" fill="rgba(8,9,13,0.32)" />
+      <text x="${width * 0.08}" y="${height * 0.66}" fill="rgba(255,255,255,0.95)" font-family="'Noto Sans JP', sans-serif" font-size="${Math.round(width * 0.085)}" font-weight="700">${title}</text>
+      <text x="${width * 0.08}" y="${height * 0.74}" fill="rgba(255,255,255,0.72)" font-family="'Share Tech Mono', monospace" font-size="${Math.round(width * 0.038)}" letter-spacing="3">${subtitle}</text>
+    </svg>
+  `;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
+function createCharacterArt(name: string, accent: string): string {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="320" height="440" viewBox="0 0 320 440">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#0d1220" />
+          <stop offset="100%" stop-color="${accent}" />
+        </linearGradient>
+      </defs>
+      <rect width="100%" height="100%" rx="28" fill="url(#bg)" />
+      <circle cx="160" cy="132" r="74" fill="rgba(255,255,255,0.12)" />
+      <path d="M56 370c18-60 62-92 104-92s86 32 104 92" fill="rgba(255,255,255,0.14)" />
+      <text x="160" y="400" text-anchor="middle" fill="rgba(255,255,255,0.92)" font-family="'Noto Sans JP', sans-serif" font-size="28" font-weight="700">${name}</text>
+    </svg>
+  `;
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 }
 
 export const sampleAnimeList: AnimeData[] = [
@@ -85,6 +150,7 @@ export const sampleAnimeList: AnimeData[] = [
     mood: "chaotic-pop",
     twitterHashtag: "フリクリ",
     youtubeTrailerId: "t7Gz5XXgGhw",
+    featured: true,
   },
   {
     id: 9253,
@@ -202,6 +268,7 @@ export const sampleAnimeList: AnimeData[] = [
     mood: "dark-tech",
     twitterHashtag: "シュタインズゲート",
     youtubeTrailerId: "27OZc-ku6is",
+    featured: true,
     music: [
       {
         type: "OP",
@@ -284,6 +351,7 @@ export const sampleAnimeList: AnimeData[] = [
     mood: "serene-melancholy",
     twitterHashtag: "かぐや姫の物語",
     youtubeTrailerId: "W71mtorCZDw",
+    featured: true,
   },
   {
     id: 2321,
@@ -308,6 +376,176 @@ export const sampleAnimeList: AnimeData[] = [
     mood: "epic-retro",
     twitterHashtag: "ジャイアントロボ",
     youtubeTrailerId: "W71mtorCZDwop2rvF6fU44",
+  },
+  {
+    id: 20260116,
+    title: {
+      romaji: "Sousou no Frieren 2nd Season",
+      english: "Frieren: Beyond Journey's End Season 2",
+      native: "葬送のフリーレン 第2期",
+    },
+    description:
+      "勇者ヒンメルの死をきっかけに人の心を知る旅へ出たフリーレン。その旅路を共にするフェルン、シュタルクとともに北側諸国を進む中で、静かな時間の積み重ねと苛烈な戦いの両方がより濃く描かれる第2期。",
+    coverImage: {
+      extraLarge: createGradientArt("葬送のフリーレン", "SEASON 2", "#17375d", "#8db695", 900, 1280),
+      large: createGradientArt("葬送のフリーレン", "SEASON 2", "#17375d", "#8db695", 600, 860),
+      color: "#8db695",
+    },
+    bannerImage: createGradientArt("FRIEREN", "BEYOND JOURNEY'S END", "#13263f", "#6d8f84", 1600, 720),
+    genres: ["Adventure", "Drama", "Fantasy"],
+    averageScore: 92,
+    episodes: 12,
+    status: "RELEASING",
+    season: "WINTER",
+    seasonYear: 2026,
+    studios: { nodes: [{ name: "MADHOUSE" }] },
+    characters: {
+      nodes: [
+        {
+          id: 2026011601,
+          name: { full: "Frieren", native: "フリーレン" },
+          image: {
+            large: createCharacterArt("フリーレン", "#5d7fa1"),
+            medium: createCharacterArt("フリーレン", "#5d7fa1"),
+          },
+          description:
+            "魔王を倒した勇者一行の魔法使い。千年以上を生きるエルフで、人の気持ちを知るための旅を続けている。",
+        },
+        {
+          id: 2026011602,
+          name: { full: "Fern", native: "フェルン" },
+          image: {
+            large: createCharacterArt("フェルン", "#6e5b8f"),
+            medium: createCharacterArt("フェルン", "#6e5b8f"),
+          },
+          description:
+            "フリーレンの弟子で、一行の空気を整える常識人。ハイターに拾われ、幼い頃から魔法を学んできた。",
+        },
+        {
+          id: 2026011603,
+          name: { full: "Stark", native: "シュタルク" },
+          image: {
+            large: createCharacterArt("シュタルク", "#a06a4b"),
+            medium: createCharacterArt("シュタルク", "#a06a4b"),
+          },
+          description:
+            "戦士アイゼンの弟子。気弱に見えても、仲間のためには前に出られる勇敢さを持つ戦士。",
+        },
+        {
+          id: 2026011604,
+          name: { full: "Himmel", native: "ヒンメル" },
+          image: {
+            large: createCharacterArt("ヒンメル", "#6487c2"),
+            medium: createCharacterArt("ヒンメル", "#6487c2"),
+          },
+          description:
+            "魔王を倒した勇者一行の勇者。旅の痕跡を各地に残し、今も多くの人の行動や価値観に影響を与えている。",
+        },
+        {
+          id: 2026011605,
+          name: { full: "Heiter", native: "ハイター" },
+          image: {
+            large: createCharacterArt("ハイター", "#73916c"),
+            medium: createCharacterArt("ハイター", "#73916c"),
+          },
+          description:
+            "勇者一行の僧侶。飄々として見えるが、フェルンを育て、フリーレンの旅にも大きな影響を与えた導き手。",
+        },
+        {
+          id: 2026011606,
+          name: { full: "Eisen", native: "アイゼン" },
+          image: {
+            large: createCharacterArt("アイゼン", "#8b6f56"),
+            medium: createCharacterArt("アイゼン", "#8b6f56"),
+          },
+          description:
+            "勇者一行の戦士。頑丈さと実直さを兼ね備えたドワーフで、シュタルクの師匠でもある。",
+        },
+      ],
+      edges: [
+        { role: "MAIN", voiceActors: [{ id: 2026011611, name: { full: "Atsumi Tanezaki", native: "種﨑敦美" } }] },
+        { role: "MAIN", voiceActors: [{ id: 2026011612, name: { full: "Kana Ichinose", native: "市ノ瀬加那" } }] },
+        { role: "MAIN", voiceActors: [{ id: 2026011613, name: { full: "Chiaki Kobayashi", native: "小林千晃" } }] },
+        { role: "SUPPORTING", voiceActors: [{ id: 2026011614, name: { full: "Nobuhiko Okamoto", native: "岡本信彦" } }] },
+        { role: "SUPPORTING", voiceActors: [{ id: 2026011615, name: { full: "Hiroki Touchi", native: "東地宏樹" } }] },
+        { role: "SUPPORTING", voiceActors: [{ id: 2026011616, name: { full: "Yoji Ueda", native: "上田燿司" } }] },
+      ],
+    },
+    themeColor: "#8db695",
+    accentColor: "#89b9ff",
+    mood: "fantasy-elegy",
+    twitterHashtag: "フリーレン",
+    youtubeTrailerId: "RH-FcW94z00",
+    music: [
+      {
+        type: "OP",
+        title: "lulu.",
+        artist: "Mrs. GREEN APPLE",
+      },
+      {
+        type: "ED",
+        title: "The Story of Us",
+        artist: "milet",
+      },
+    ],
+    promotionalVideos: [
+      { title: "第2期発表映像", youtubeId: "DknvOzqQCTo" },
+      { title: "ティザービジュアル第2弾発表映像", youtubeId: "-xW3fjM26vY" },
+      { title: "ティザーPV", youtubeId: "P-YPtYkViKM" },
+      { title: "PV第2弾", youtubeId: "MwP4gqRys4c" },
+      { title: "本PV", youtubeId: "RH-FcW94z00" },
+    ],
+    communityReviews: [
+      {
+        title: "空気感と余白が好き",
+        summary:
+          "Annictの視聴記録では、静かな空気感や間の取り方の心地よさを評価する感想が多く見られる。",
+        source: "Annict series records",
+        href: "https://annict.com/works/10079",
+      },
+      {
+        title: "音楽と映像の完成度",
+        summary:
+          "映像表現、劇伴、演出が原作の魅力をさらに押し広げているという反応が目立つ。",
+        source: "Annict series records",
+        href: "https://annict.com/works/10079",
+      },
+      {
+        title: "穏やかさと戦闘の落差",
+        summary:
+          "日常の柔らかな会話劇と、要所で切れ味を見せるバトル演出の対比が高く評価されている。",
+        source: "Annict episode records",
+        href: "https://annict.com/works/10079/episodes/158238",
+      },
+    ],
+    relatedContents: [
+      {
+        title: "公式サイト",
+        href: "https://frieren-anime.jp/",
+        meta: "イントロダクション、キャラクター、放送情報",
+      },
+      {
+        title: "公式MOVIEページ",
+        href: "https://frieren-anime.jp/movie/",
+        meta: "PV、OP/ED、次回予告",
+      },
+      {
+        title: "Annict 関連作品",
+        href: "https://annict.com/works/10079/related_works",
+        meta: "第1期、ミニアニメ、シリーズ導線",
+      },
+      {
+        title: "ミニアニメ『●●の魔法』新作情報",
+        href: "https://frieren-anime.jp/news/4625/",
+        meta: "放送期間中に不定期配信",
+      },
+      {
+        title: "スペシャルギャラリー",
+        href: "https://frieren-anime.jp/special/gallery/",
+        meta: "第2期キービジュアルやイラスト",
+      },
+    ],
+    forceLocal: true,
   },
   {
     id: 201903,
@@ -374,5 +612,150 @@ export const sampleAnimeList: AnimeData[] = [
       { title: "予告PV 第2弾", youtubeId: undefined },
       { title: "特報映像",     youtubeId: undefined },
     ],
+    featured: true,
   },
 ];
+
+const frierenSeason2 = sampleAnimeList.find((anime) => anime.id === 20260116);
+
+if (frierenSeason2) {
+  frierenSeason2.title.native = "葬送のフリーレン 第2期";
+  frierenSeason2.description =
+    "勇者ヒンメルの死をきっかけに、人の心を知る旅へ出たフリーレン。フェルン、シュタルクとともに北側諸国を進むなかで、静かな時間の積み重ねと苛烈な戦いの両方がより濃く描かれる第2期。";
+  frierenSeason2.coverImage = {
+    extraLarge: "https://frieren-anime.jp/wp-content/uploads/2025/09/n-724x1024.jpg",
+    large: "https://frieren-anime.jp/wp-content/uploads/2025/09/n-724x1024.jpg",
+    color: "#8db695",
+  };
+  frierenSeason2.bannerImage =
+    "https://frieren-anime.jp/wp-content/themes/frieren_2023/assets/img/top/top/9_visual.jpg";
+  frierenSeason2.twitterHashtag = "フリーレン";
+  frierenSeason2.characters.nodes = [
+    {
+      id: 2026011601,
+      name: { full: "Frieren", native: "フリーレン" },
+      image: {
+        large: "https://frieren-anime.jp/wp-content/uploads/2023/08/chara01_full1.png",
+        medium: "https://frieren-anime.jp/wp-content/uploads/2023/08/chara01_full1.png",
+      },
+      description:
+        "魔王を倒した勇者一行の魔法使い。千年以上生きるエルフで、人の気持ちを知るため旅を続けている。",
+    },
+    {
+      id: 2026011602,
+      name: { full: "Fern", native: "フェルン" },
+      image: {
+        large: "https://frieren-anime.jp/wp-content/uploads/2023/08/chara02_full1.png",
+        medium: "https://frieren-anime.jp/wp-content/uploads/2023/08/chara02_full1.png",
+      },
+      description:
+        "フリーレンの弟子。常識人で、ハイターに拾われて幼い頃から魔法を学んだ。",
+    },
+    {
+      id: 2026011603,
+      name: { full: "Stark", native: "シュタルク" },
+      image: {
+        large: "https://frieren-anime.jp/wp-content/uploads/2023/08/chara03_full1.png",
+        medium: "https://frieren-anime.jp/wp-content/uploads/2023/08/chara03_full1.png",
+      },
+      description:
+        "フリーレンとフェルンと共に旅をする戦士で、アイゼンの弟子。臆病ながら優しい心の持ち主。",
+    },
+    {
+      id: 2026011604,
+      name: { full: "Himmel", native: "ヒンメル" },
+      image: {
+        large: "https://frieren-anime.jp/wp-content/uploads/2023/08/chara4_full1.png",
+        medium: "https://frieren-anime.jp/wp-content/uploads/2023/08/chara4_full1.png",
+      },
+      description:
+        "魔王を倒した勇者パーティーの勇者。まっすぐな言葉と振る舞いで、多くの人の記憶に残り続けている。",
+    },
+    {
+      id: 2026011605,
+      name: { full: "Heiter", native: "ハイター" },
+      image: {
+        large: "https://frieren-anime.jp/wp-content/uploads/2023/08/chara5_full1.png",
+        medium: "https://frieren-anime.jp/wp-content/uploads/2023/08/chara5_full1.png",
+      },
+      description:
+        "魔王を倒した勇者パーティーの僧侶。飄々として見えるが、フェルンを育てた大きな導き手。",
+    },
+    {
+      id: 2026011606,
+      name: { full: "Eisen", native: "アイゼン" },
+      image: {
+        large: "https://frieren-anime.jp/wp-content/uploads/2023/08/chara6_full1-1.png",
+        medium: "https://frieren-anime.jp/wp-content/uploads/2023/08/chara6_full1-1.png",
+      },
+      description:
+        "魔王を倒した勇者パーティーの戦士。頑強なドワーフ族で、寡黙ながらパーティーを支える前衛。",
+    },
+  ];
+  frierenSeason2.characters.edges = [
+    { role: "MAIN", voiceActors: [{ id: 2026011611, name: { full: "Atsumi Tanezaki", native: "種﨑敦美" } }] },
+    { role: "MAIN", voiceActors: [{ id: 2026011612, name: { full: "Kana Ichinose", native: "市ノ瀬加那" } }] },
+    { role: "MAIN", voiceActors: [{ id: 2026011613, name: { full: "Chiaki Kobayashi", native: "小林千晃" } }] },
+    { role: "SUPPORTING", voiceActors: [{ id: 2026011614, name: { full: "Nobuhiko Okamoto", native: "岡本信彦" } }] },
+    { role: "SUPPORTING", voiceActors: [{ id: 2026011615, name: { full: "Hiroki Touchi", native: "東地宏樹" } }] },
+    { role: "SUPPORTING", voiceActors: [{ id: 2026011616, name: { full: "Yoji Ueda", native: "上田燿司" } }] },
+  ];
+}
+
+if (frierenSeason2) {
+  frierenSeason2.title.native = "葬送のフリーレン 第2期";
+  frierenSeason2.description =
+    "勇者ヒンメルの死をきっかけに、人の心を知る旅へ出たフリーレン。フェルン、シュタルクとともに北側諸国を進むなかで、静かな時間の積み重ねと苛烈な戦いの両方がより濃く描かれる第2期。";
+  frierenSeason2.coverImage = {
+    extraLarge: "/frieren/key-visual.jpg",
+    large: "/frieren/key-visual.jpg",
+    color: "#8db695",
+  };
+  frierenSeason2.bannerImage = "/frieren/banner-visual.jpg";
+  frierenSeason2.twitterHashtag = "フリーレン";
+  frierenSeason2.youtubeTrailerId = "P-YPtYkViKM";
+  frierenSeason2.promotionalVideos = [
+    { title: "ティザーPV", youtubeId: "P-YPtYkViKM" },
+    { title: "PV第2弾", youtubeId: "MwP4gqRys4c" },
+    { title: "第2期発表映像", youtubeId: "DknvOzqQCTo" },
+    { title: "ティザービジュアル第2弾発表映像", youtubeId: "-xW3fjM26vY" },
+  ];
+  frierenSeason2.characters.nodes = [
+    {
+      id: 2026011601,
+      name: { full: "Frieren", native: "フリーレン" },
+      image: { large: "/frieren/chara-frieren.png", medium: "/frieren/chara-frieren.png" },
+      description: "魔王を倒した勇者一行の魔法使い。千年以上生きるエルフで、人の気持ちを知るため旅を続けている。",
+    },
+    {
+      id: 2026011602,
+      name: { full: "Fern", native: "フェルン" },
+      image: { large: "/frieren/chara-fern.png", medium: "/frieren/chara-fern.png" },
+      description: "フリーレンの弟子。常識人で、ハイターに拾われて幼い頃から魔法を学んだ。",
+    },
+    {
+      id: 2026011603,
+      name: { full: "Stark", native: "シュタルク" },
+      image: { large: "/frieren/chara-stark.png", medium: "/frieren/chara-stark.png" },
+      description: "フリーレンとフェルンと共に旅をする戦士で、アイゼンの弟子。臆病ながら優しい心の持ち主。",
+    },
+    {
+      id: 2026011604,
+      name: { full: "Himmel", native: "ヒンメル" },
+      image: { large: "/frieren/chara-himmel.png", medium: "/frieren/chara-himmel.png" },
+      description: "魔王を倒した勇者パーティーの勇者。まっすぐな言葉と振る舞いで、多くの人の記憶に残り続けている。",
+    },
+    {
+      id: 2026011605,
+      name: { full: "Heiter", native: "ハイター" },
+      image: { large: "/frieren/chara-heiter.png", medium: "/frieren/chara-heiter.png" },
+      description: "魔王を倒した勇者パーティーの僧侶。飄々として見えるが、フェルンを育てた大きな導き手。",
+    },
+    {
+      id: 2026011606,
+      name: { full: "Eisen", native: "アイゼン" },
+      image: { large: "/frieren/chara-eisen.png", medium: "/frieren/chara-eisen.png" },
+      description: "魔王を倒した勇者パーティーの戦士。頑強なドワーフ族で、寡黙ながらパーティーを支える前衛。",
+    },
+  ];
+}

@@ -2,10 +2,34 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import SplitType from "split-type";
+import ParticleBackground from "../shared/ParticleBackground";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function Hero() {
+// ホーム用パーティクル設定: ダーク空間に漂う微細な光の粒
+const HOME_PARTICLE_CONFIG = {
+  particles: {
+    number: { value: 50 },
+    color: { value: ["#00e5ff", "#ff2d78", "#ffffff"] },
+    shape: { type: "circle" as const },
+    size: { value: { min: 0.5, max: 2 } },
+    move: {
+      enable: true,
+      speed: 0.3,
+      direction: "none" as const,
+      random: true,
+      outModes: { default: "out" as const },
+    },
+    opacity: { value: { min: 0.1, max: 0.5 } },
+  },
+};
+
+interface HeroProps {
+  /** 作品数（動的表示用） */
+  animeCount?: number;
+}
+
+export default function Hero({ animeCount = 0 }: HeroProps) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const eyebrowRef = useRef<HTMLDivElement>(null);
@@ -40,6 +64,7 @@ export default function Hero() {
       .to(subtitle, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, "-=0.3")
       .to(meta, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, "-=0.2");
 
+    // パララックス: 背景レイヤーをスクロールに連動
     gsap.to(bg, {
       y: "35%",
       ease: "none",
@@ -73,6 +98,11 @@ export default function Hero() {
 
   return (
     <section className="hero">
+      {/* パーティクル: 背景の最奥レイヤーに配置 */}
+      <div className="hero-particles">
+        <ParticleBackground config={HOME_PARTICLE_CONFIG} />
+      </div>
+
       <div ref={bgRef} className="hero-bg">
         <div className="hero-grid" />
         <div className="hero-rings" aria-hidden="true">
@@ -94,7 +124,7 @@ export default function Hero() {
         <div ref={metaRef} className="hero-meta">
           <span>15 YEARS OF CULTURE</span>
           <span className="meta-divider">|</span>
-          <span>5 CURATED TITLES</span>
+          <span>{animeCount} CURATED TITLES</span>
         </div>
         <div className="hero-status-band" aria-hidden="true">
           <span>LIVE CURATION</span>
@@ -103,7 +133,7 @@ export default function Hero() {
         </div>
       </div>
       <div className="hero-scroll-hint">
-        <span>SCROLL</span>
+        <span className="scroll-hint-text">SCROLL</span>
         <div className="scroll-line" />
       </div>
     </section>

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { AnimeData } from "../../data/sampleAnime";
 import { parseYouTubeId } from "../../lib/parseYouTubeId";
@@ -31,7 +31,7 @@ function saveStored(animeId: number, videos: StoredVideo[]): void {
   try {
     localStorage.setItem(`yt-user-${animeId}`, JSON.stringify(videos));
   } catch {
-    /* silent */
+    /* ignore */
   }
 }
 
@@ -41,121 +41,123 @@ export default function YouTubeEmbed({ anime }: Props) {
   const [urlError, setUrlError] = useState<string | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
 
-  // タブ一覧: 公式トレーラー → ユーザー追加
-  const tabs: VideoTab[] = [
-    ...(anime.youtubeTrailerId
-      ? [{ id: anime.youtubeTrailerId, label: "トレーラー", isUserAdded: false }]
-      : []),
-    ...stored.map((v) => ({ id: v.id, label: v.title, isUserAdded: true })),
-  ];
+  const tabs: VideoTab[] = useMemo(
+    () => [
+      ...(anime.youtubeTrailerId
+        ? [{ id: anime.youtubeTrailerId, label: "公式PV", isUserAdded: false }]
+        : []),
+      ...stored.map((video) => ({
+        id: video.id,
+        label: video.title,
+        isUserAdded: true,
+      })),
+    ],
+    [anime.youtubeTrailerId, stored]
+  );
 
   const [activeId, setActiveId] = useState<string | null>(tabs[0]?.id ?? null);
-
-  // activeId がタブ一覧に存在するか保証
-  const resolvedId = tabs.find((t) => t.id === activeId)?.id ?? tabs[0]?.id ?? null;
+  const resolvedId = tabs.find((tab) => tab.id === activeId)?.id ?? tabs[0]?.id ?? null;
+  const activeTab = tabs.find((tab) => tab.id === resolvedId) ?? null;
+  const hasVideo = resolvedId !== null;
 
   const handleAdd = useCallback(() => {
     const videoId = parseYouTubeId(urlInput);
     if (!videoId) {
-      setUrlError("有効な YouTube URL または動画ID を入力してください");
+      setUrlError("有効な YouTube URL か動画 ID を入力してください。");
       return;
     }
-    if (tabs.some((t) => t.id === videoId)) {
-      setUrlError("この動画はすでに登録されています");
+    if (tabs.some((tab) => tab.id === videoId)) {
+      setUrlError("その動画はすでに追加されています。");
       return;
     }
-    const newVideo: StoredVideo = {
-      id: videoId,
-      title: `マイ動画 ${stored.length + 1}`,
-    };
-    const updated = [...stored, newVideo];
-    setStored(updated);
-    saveStored(anime.id, updated);
+
+    const nextStored = [
+      ...stored,
+      {
+        id: videoId,
+        title: `追加動画 ${stored.length + 1}`,
+      },
+    ];
+
+    setStored(nextStored);
+    saveStored(anime.id, nextStored);
     setActiveId(videoId);
     setUrlInput("");
     setUrlError(null);
     setIsAddOpen(false);
-  }, [urlInput, stored, tabs, anime.id]);
+  }, [anime.id, stored, tabs, urlInput]);
 
   const handleDelete = useCallback(
     (id: string) => {
-      const updated = stored.filter((v) => v.id !== id);
-      setStored(updated);
-      saveStored(anime.id, updated);
+      const nextStored = stored.filter((video) => video.id !== id);
+      setStored(nextStored);
+      saveStored(anime.id, nextStored);
       if (activeId === id) {
-        const remaining = tabs.filter((t) => t.id !== id);
-        setActiveId(remaining[0]?.id ?? null);
+        const nextActive = tabs.filter((tab) => tab.id !== id)[0]?.id ?? null;
+        setActiveId(nextActive);
       }
     },
-    [stored, anime.id, activeId, tabs]
+    [activeId, anime.id, stored, tabs]
   );
 
-  // 公式トレーラーも追加動画もない場合は追加パネルのみ表示
-  const hasVideo = resolvedId !== null;
+  const watchUrl = resolvedId ? `https://www.youtube.com/watch?v=${resolvedId}` : null;
+  const thumbnailUrl = resolvedId
+    ? `https://img.youtube.com/vi/${resolvedId}/maxresdefault.jpg`
+    : null;
 
   return (
     <section className="movie-section">
-      {/* ── ヘッダー ── */}
       <div className="movie-header">
         <h2 className="movie-title">MOVIE</h2>
         <motion.button
           className="movie-add-btn"
           onClick={() => {
-            setIsAddOpen((p) => !p);
+            setIsAddOpen((value) => !value);
             setUrlError(null);
           }}
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
         >
-          {isAddOpen ? "✕ 閉じる" : "＋ URL を追加"}
+          {isAddOpen ? "閉じる" : "+ URL を追加"}
         </motion.button>
       </div>
 
-      {/* ── URL 入力パネル (slide-down) ── */}
       <AnimatePresence>
         {isAddOpen && (
           <motion.div
             className="movie-add-panel"
-            key="add-panel"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
           >
             <p className="movie-add-hint">
-              YouTube URL を貼り付けて「追加」を押してください
+              YouTube URL か動画 ID を入力すると、この作品ページに追加できます。
             </p>
             <div className="movie-add-row">
               <input
                 className="movie-url-input"
                 type="text"
-                placeholder="https://youtu.be/xxxxx  または  動画ID"
+                placeholder="https://youtu.be/xxxxx または動画ID"
                 value={urlInput}
-                onChange={(e) => {
-                  setUrlInput(e.target.value);
+                onChange={(event) => {
+                  setUrlInput(event.target.value);
                   setUrlError(null);
                 }}
-                onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") handleAdd();
+                }}
                 autoFocus
               />
               <button className="movie-add-confirm" onClick={handleAdd}>
                 追加
               </button>
             </div>
-            {urlError && (
-              <motion.p
-                className="movie-add-error"
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                ❌ {urlError}
-              </motion.p>
-            )}
+            {urlError && <p className="movie-add-error">{urlError}</p>}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── 動画なし ── */}
       {!hasVideo && !isAddOpen && (
         <motion.div
           className="movie-empty"
@@ -163,15 +165,11 @@ export default function YouTubeEmbed({ anime }: Props) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
         >
-          <span className="movie-empty-icon">▶</span>
-          <p>動画がまだ登録されていません</p>
-          <span className="movie-empty-hint">
-            ＋ URL を追加 から YouTube URL を登録できます
-          </span>
+          <span className="movie-empty-icon">VIDEO</span>
+          <p>再生できる動画がまだありません。</p>
         </motion.div>
       )}
 
-      {/* ── タブ（複数動画のとき） ── */}
       {tabs.length > 1 && (
         <div className="movie-tabs">
           {tabs.map((tab) => (
@@ -185,8 +183,8 @@ export default function YouTubeEmbed({ anime }: Props) {
               {tab.isUserAdded && (
                 <button
                   className="movie-tab-delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
+                  onClick={(event) => {
+                    event.stopPropagation();
                     handleDelete(tab.id);
                   }}
                   title="削除"
@@ -199,29 +197,35 @@ export default function YouTubeEmbed({ anime }: Props) {
         </div>
       )}
 
-      {/* ── 動画プレーヤー（コインフリップ切り替え） ── */}
-      <div className="youtube-flip-stage">
-        <AnimatePresence mode="wait">
-          {resolvedId && (
-            <motion.div
-              key={resolvedId}
-              className="youtube-wrapper"
-              initial={{ rotateY: -90, opacity: 0.3 }}
-              animate={{ rotateY: 0, opacity: 1 }}
-              exit={{ rotateY: 90, opacity: 0.3 }}
-              transition={{ duration: 0.42, ease: [0.23, 1, 0.32, 1] }}
-            >
-            <iframe
-              className="youtube-iframe"
-              src={`https://www.youtube.com/embed/${resolvedId}?rel=0&modestbranding=1`}
-              title={tabs.find((t) => t.id === resolvedId)?.label ?? "動画"}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
+      {resolvedId && watchUrl && (
+        <motion.a
+          key={resolvedId}
+          href={watchUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="video-launch-card"
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28, ease: "easeOut" }}
+        >
+          {thumbnailUrl && (
+            <img
+              className="video-launch-thumb"
+              src={thumbnailUrl}
+              alt={activeTab?.label ?? "YouTube preview"}
             />
-            </motion.div>
           )}
-        </AnimatePresence>
-      </div>
+          <div className="video-launch-shade" />
+          <div className="video-launch-content">
+            <span className="video-launch-kicker">YOUTUBE</span>
+            <h3 className="video-launch-title">{activeTab?.label ?? "公式PV"}</h3>
+            <p className="video-launch-description">
+              埋め込み再生ではなく、YouTube を新しいタブで開く表示にしています。
+            </p>
+            <span className="video-launch-button">YouTubeで見る</span>
+          </div>
+        </motion.a>
+      )}
     </section>
   );
 }
