@@ -17,6 +17,26 @@ Read this first, then jump to the focused docs in `docs/`.
   - `src/pages/AnimeDetailPage.tsx`
   - `src/pages/showcase/GifMaker.tsx`
 
+## GitHub Development Flow
+
+Issue → Branch → Codex implementation → Pull Request → GitHub Actions → Review → Merge → Close
+
+- Do not commit directly to `master` for normal development.
+- Keep one primary purpose per Issue.
+- Use `feature`, `bug`, `improvement`, or `documentation` as the basic Issue category when available.
+- PRs must identify the related Issue, affected anime/title, common-UI impact, and validation results.
+- Do not merge while required Actions are failing.
+
+## Branch Naming
+
+Use a short purpose after the Issue number.
+
+- `feature/issue-12-...`
+- `bug/issue-13-...`
+- `improvement/issue-14-...`
+- `docs/issue-15-...`
+- `chore/issue-16-...`
+
 ## Commands
 
 - Install: `npm ci`
@@ -44,6 +64,8 @@ Read this first, then jump to the focused docs in `docs/`.
   - `OfficialCharacterSection`
   - `CharacterGrid`
   - `CharacterShowcase`
+- Anime-specific presentation changes must not silently change other titles that share common components.
+- Do not commit API tokens, `.env`, local-machine settings, or generated private data.
 
 ## Known Hotspots
 
@@ -58,4 +80,7 @@ Read this first, then jump to the focused docs in `docs/`.
 3. Change data shape first if needed.
 4. Add or update the UI component.
 5. Wire it into `AnimeDetailPage.tsx` or the relevant page.
-6. Run `npm run build` before handing off.
+6. Run `npm run lint` and `npm run build` before handing off.
+7. Record results and any visual/manual checks in the PR.
+
+Related: Issue #1 #2
